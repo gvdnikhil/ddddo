@@ -13,16 +13,16 @@ public class HelloWorldController {
     private final Logger logger = LoggerFactory.getLogger(HelloWorldController.class);
 
     @GetMapping(path = "/userhello")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasAuthority('USER')")
     public String helloWorld() {
-        logger.info("ENter ed hello world controller");
+        logger.info("ENtered user hello world controller");
 
         return "{\"message\":\"Hello World Java v1\"}";
     }
 
 
     @GetMapping(path = "/adminhello")
-    @PreAuthorize("hasRole('admin')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String helloWorldbyAdmin() {
         logger.info("Enter ed hello world controller");
 

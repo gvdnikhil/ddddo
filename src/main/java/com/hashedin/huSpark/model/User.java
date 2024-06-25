@@ -18,7 +18,8 @@ import java.util.Set;
 @Table( name = "users",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "username"),
-                @UniqueConstraint(columnNames = "email")
+                @UniqueConstraint(columnNames = "email"),
+                @UniqueConstraint(columnNames = "phoneNumber")
         })
 
 
@@ -40,9 +41,8 @@ public class User {
     @Email
     private String email;
 
-    @Setter
     @NotBlank
-    @Size(max = 25)
+    @Size(max = 255)
     private String password;
 
     @Size(min =10 ,max = 10)
@@ -67,4 +67,25 @@ public class User {
         this.password = password;
     }
 
+    public User(String username, String email, String encode, String phoneNumber, LocalDate dob) {
+        this.username = username;
+        this.email = email;
+        this.password =  encode;
+        this.phoneNumber = phoneNumber;
+        this.dob = dob;
+    }
+
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", dob=" + dob +
+                ", roles=" + roles +
+                '}';
+    }
 }

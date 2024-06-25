@@ -1,7 +1,7 @@
 package com.hashedin.huSpark.utils.jwt;
 
 
-import com.hashedin.huSpark.service.userdetails.UserDetailsServiceImpl;
+import com.hashedin.huSpark.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,16 +31,35 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
+
+
+            logger.info("doFilterInternal Filter");
+
             String jwt = parseJwt(request);
+
+            logger.info("doFilterInternal Filter with   {}", jwt);
+
+
+
             if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
+                logger.info("Usernmane from jwt token    "+username);
+
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+                logger.info("Checking the data from userdetailservice   "+userDetails.toString());
+
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
                         userDetails.getAuthorities());
+
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
+
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                logger.info("Setting Security Context    "+SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
             }
         } catch (Exception e) {
             logger.error("Cannot set user authentication: {}", e);
@@ -50,11 +69,16 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private String parseJwt(HttpServletRequest request) {
+
+        logger.info("Parse JWT  token   ");
         String headerAuth = request.getHeader("Authorization");
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            logger.info("Parse JWT  token   "+headerAuth.substring(7, headerAuth.length()));
+
             return headerAuth.substring(7, headerAuth.length());
         }
+
 
         return null;
     }

@@ -1,7 +1,7 @@
 package com.hashedin.huSpark.utils.jwt;
 
 
-import com.hashedin.huSpark.service.userdetails.UserDetailsImpl;
+import com.hashedin.huSpark.services.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -26,11 +26,13 @@ public class JwtUtils {
 
     public String generateJwtToken(Authentication authentication) {
 
+        logger.info("generateJwtToken");
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        logger.info(userPrincipal.toString());
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))
-                .claim("roles", userPrincipal.getAuthorities())
+
 
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
@@ -39,16 +41,20 @@ public class JwtUtils {
     }
 
     private Key key() {
+        logger.info("Entered key");
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
     }
 
     public String getUserNameFromJwtToken(String token) {
+        logger.info("generate Name from JwtToken");
         return Jwts.parserBuilder().setSigningKey(key()).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
     public boolean validateJwtToken(String authToken) {
         try {
+            logger.info("Validate JwtToken");
+
             Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
             return true;
         } catch (MalformedJwtException e) {

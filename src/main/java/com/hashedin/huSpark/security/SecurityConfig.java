@@ -2,7 +2,7 @@ package com.hashedin.huSpark.security;
 
 
 import com.hashedin.huSpark.exception.UnauthorisedAuthHandler;
-import com.hashedin.huSpark.service.userdetails.UserDetailsServiceImpl;
+import com.hashedin.huSpark.services.UserDetailsServiceImpl;
 import com.hashedin.huSpark.utils.jwt.AuthTokenFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,11 +81,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/**").permitAll()
-                        .requestMatchers("/api/test/**").permitAll()
-                        .requestMatchers("/api/movies").permitAll()
-                        .requestMatchers("/api/movies/**").permitAll()
-                        .requestMatchers("/v2/api-docs").permitAll()
-                        .requestMatchers("/hello").hasAnyRole("admin", "user")
+
                         .requestMatchers("/swagger-ui/index.html").permitAll()
                         .anyRequest().authenticated()
                 );

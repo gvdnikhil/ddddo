@@ -2,10 +2,11 @@ package com.hashedin.huSpark.controller;
 
 
 import com.hashedin.huSpark.model.request.SignupRequest;
-import com.hashedin.huSpark.model.request.UserRequest;
+import com.hashedin.huSpark.model.request.LoginRequest;
 import com.hashedin.huSpark.model.response.JwtResponse;
-import com.hashedin.huSpark.service.userdetails.UserDetailsImpl;
-import com.hashedin.huSpark.service.userdetails.auth.UserSignupService;
+import com.hashedin.huSpark.services.UserDetailsImpl;
+import com.hashedin.huSpark.services.auth.UserLoginService;
+import com.hashedin.huSpark.services.auth.UserSignupService;
 import com.hashedin.huSpark.utils.jwt.JwtUtils;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -34,53 +35,36 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+
+
 
     @Autowired
    private UserSignupService userSignupService;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    private final UserLoginService userLoginService;
 
     @Autowired
-    JwtUtils jwtUtils;
+    public AuthController(UserLoginService userLoginService) {
+        this.userLoginService = userLoginService;
+    }
+
+
 
 
     private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
 
     @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody UserRequest userRequest) {
+        try {
+            logger.info("entered in login user");
+            ResponseEntity<?> result = userLoginService.loginUser(loginRequest);
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
 
-
-        logger.info(userRequest.toString());
-
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(userRequest.getUsername(), userRequest.getPassword()));
-
-
-        logger.info(authentication.toString());
-
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-
-
-        String jwt = jwtUtils.generateJwtToken(authentication);
-
-        logger.info(jwt);
-
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
-
-        return ResponseEntity
-                .ok(new JwtResponse(jwt, userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles));
     }
 
     @PostMapping("/signup")
