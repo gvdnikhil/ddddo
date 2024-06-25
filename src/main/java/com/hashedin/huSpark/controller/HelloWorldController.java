@@ -13,7 +13,7 @@ public class HelloWorldController {
     private final Logger logger = LoggerFactory.getLogger(HelloWorldController.class);
 
     @GetMapping(path = "/userhello")
-    @PreAuthorize("hasAuthority('USER')")
+    @PreAuthorize("hasRole('USER')")
     public String helloWorld() {
         logger.info("ENtered user hello world controller");
 
