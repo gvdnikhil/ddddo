@@ -1,0 +1,2 @@
+aws s3 sync . s3://dna-autodidact-production-bucket/repos/hu-sp-3ffa93bc6-main-assessment-boilerplate-1718694785342/master/ --delete --exclude ./venv/\* --exclude ./env/\*
+echo Success
